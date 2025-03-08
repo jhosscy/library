@@ -1,0 +1,61 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FloatingActionButton from '../../components/FloatingActionButton.astro'
+import Modal from '../../components/Modal.svelte';
+import FolderDeleteModal from '../../components/FolderDeleteModal.svelte';
+import FolderEditModal from '../../components/FolderEditModal.svelte';
+import Semesters from '../../components/Semesters.svelte';
+import { getSubjectById } from '../../services/subjectServices';
+import { getSemestersWithFilesBySubjectId } from '../../services/semesterServices';
+import { getAllTags } from '../../services/fileServices';
+
+const { subject } = Astro.params;
+const [title, id] = subject.split("-");
+
+const { icon, color } = await getSubjectById(id);
+
+const tags = await getAllTags();
+const semesters = await getSemestersWithFilesBySubjectId(id);
+console.log(semesters[0].files);
+---
+
+<script>
+  import { isModalVisible } from "../../services/shared.js";
+
+  const deleteBtn = document.querySelector('#delete-subject');
+  const editBtn = document.querySelector('#edit-subject');
+
+  deleteBtn?.addEventListener('click', () => {
+    isModalVisible.set({subjectDelete: true});
+  })
+
+  editBtn?.addEventListener('click', () => {
+    isModalVisible.set({subjectEdit: true});
+  })
+</script>
+
+<Layout title={title}>
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <h1 id="subject-title" class="text-xl font-bold text-primary-900 dark:text-white">{title}</h1>
+      <div class="flex">
+        <button id="edit-subject" class="pt-2 px-2 text-primary-500 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-800 rounded-md transition-colors">
+          <span class="material-symbols-outlined">edit</span>
+        </button>
+        <button id="delete-subject" class="pt-2 px-2 text-primary-500 hover:text-red-500 hover:bg-primary-100 dark:hover:bg-primary-800 rounded-md transition-colors">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <Semesters {semesters} {subject} {id} client:load />
+
+  <Modal id="subjectDelete" client:load >
+    <FolderDeleteModal {title} {id} client:load/>
+  </Modal>
+  <Modal id="subjectEdit" client:load >
+    <FolderEditModal {id} {title} {icon} {color} client:load/>
+  </Modal>
+  <FloatingActionButton {semesters} subjects={[{title: title, id: id}]} {tags}/>
+</Layout>

@@ -1,0 +1,141 @@
+---
+import FolderModal from './FolderModal.svelte';
+import ArticleModal from './ArticleModal.svelte';
+import FileModal from './FileModal.svelte';
+import Modal from './Modal.svelte';
+interface Props {
+  semesters?: [];
+  subjects?: [];
+  tags?: [];
+}
+
+const { semesters, subjects, tags } = Astro.props;
+const pathname = Astro.url.pathname;
+---
+
+<script>
+  import { isModalVisible } from "../services/shared.js";
+  // Elementos principales
+  const mainButton = document.getElementById('main-action-button');
+  const actionMenu = document.getElementById('action-menu');
+  const actionMenuBackdrop = document.querySelector('#menu-backdrop');
+  const createFolderButton = document.querySelector('#create-folder-button');
+  const createArticleButton = document.querySelector('#create-article-button');
+  const uploadFilesButton = document.querySelector('#upload-files-button');
+  // Contenedor de las opciones (para animar solo este elemento)
+  const menuContainer = document.querySelector('#menu-container');
+
+  // Función para abrir el menú
+  function openMenu() {
+    actionMenu.classList.remove('hidden');
+    menuContainer.classList.remove('animate-fade-out-down');
+    // Forzamos reflow para reiniciar la animación si fuera necesario
+    void menuContainer.offsetWidth;
+    menuContainer.classList.add('animate-fade-in-up');
+  }
+
+  // Función para cerrar el menú con animación
+  function closeMenu() {
+    menuContainer.classList.remove('animate-fade-in-up');
+    menuContainer.classList.add('animate-fade-out-down');
+    menuContainer.addEventListener('animationend', function handler() {
+      actionMenu.classList.add('hidden');
+      menuContainer.classList.remove('animate-fade-out-down');
+      menuContainer.removeEventListener('animationend', handler);
+    });
+  }
+
+  // Toggle en el botón principal
+  mainButton?.addEventListener('click', () => {
+    if (actionMenu.classList.contains('hidden')) {
+      openMenu();
+    } else {
+      closeMenu();
+    }
+  });
+
+  // Cerrar el menú al hacer click fuera (en el backdrop)
+  actionMenuBackdrop?.addEventListener('click', () => {
+    if (!actionMenu.classList.contains('hidden')) {
+      closeMenu();
+    }
+  });
+
+  createFolderButton?.addEventListener('click', () => {
+    if (!createFolderButton.disabled) {
+      actionMenu?.classList.add('hidden');
+      isModalVisible.set({ subjectModal: true });
+    }
+  });
+
+  createArticleButton?.addEventListener('click', () => {
+    if (!createArticleButton.disabled) {
+      actionMenu?.classList.add('hidden');
+      isModalVisible.set({ articleModal: true });
+    }
+  });
+
+  uploadFilesButton?.addEventListener('click', () => {
+    if (!uploadFilesButton.disabled) {
+      actionMenu?.classList.add('hidden');
+      isModalVisible.set({ fileModal: true });
+    }
+  });
+</script>
+
+<div class="fixed bottom-8 right-3 sm:right-6 z-40">
+  <button id="main-action-button" class="w-14 h-14 z-41 bg-accent-500 hover:bg-accent-700 text-white rounded-full shadow-lg transition-all flex items-center justify-center">
+    <span class="material-symbols-outlined text-2xl">add</span>
+  </button>
+  
+  <div id="action-menu" class="hidden">
+    <div id="menu-backdrop" class="fixed inset-0 bg-primary-900/30 dark:bg-primary-900/50 z-40"></div>
+    <div id="menu-container" class="flex flex-col gap-2 absolute bottom-full mb-2 right-0 z-50 min-w-[180px]">
+      <button
+        id="create-article-button"
+        disabled={subjects.length === 0}
+        class="opacity-0 [animation:var(--animate-fade-in-up)] [animation-delay:50ms] bg-white dark:bg-primary-800 text-primary-800 dark:text-primary-200 shadow-md px-4 py-2 rounded-md flex items-center gap-2 hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors whitespace-nowrap disabled:bg-gray-200 disabled:text-gray-500 disabled:dark:bg-gray-700 disabled:dark:text-gray-400 disabled:cursor-not-allowed"
+      >
+        <span class="material-symbols-outlined">article</span>
+        <span>Crear artículo</span>
+      </button>
+      <button
+        id="upload-files-button"
+        disabled={subjects.length === 0}
+        class="opacity-0 [animation:var(--animate-fade-in-up)] [animation-delay:100ms] bg-white dark:bg-primary-800 text-primary-800 dark:text-primary-200 shadow-md px-4 py-2 rounded-md flex items-center gap-2 hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors whitespace-nowrap disabled:bg-gray-200 disabled:text-gray-500 disabled:dark:bg-gray-700 disabled:dark:text-gray-400 disabled:cursor-not-allowed"
+      >
+        <span class="material-symbols-outlined">upload_file</span>
+        <span>Subir archivos</span>
+      </button>
+      <button
+        id="create-folder-button"
+        disabled={pathname !== "/"}
+        class="opacity-0 [animation:var(--animate-fade-in-up)] [animation-delay:150ms] bg-white dark:bg-primary-800 text-primary-800 dark:text-primary-200 shadow-md px-4 py-2 rounded-md flex items-center gap-2 hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors whitespace-nowrap disabled:bg-gray-200 disabled:text-gray-500 disabled:dark:bg-gray-700 disabled:dark:text-gray-400 disabled:cursor-not-allowed"
+      >
+        <span class="material-symbols-outlined">create_new_folder</span>
+        <span>Nueva materia</span>
+      </button>
+    </div>
+  </div>
+  
+
+  {subjects.length > 0 ?
+    <Modal id="fileModal" client:load>
+      <FileModal {semesters} {subjects} {tags} client:load />
+    </Modal> :
+    <></>
+  }
+  {subjects.length > 0 ?
+    <Modal id="articleModal" client:load>
+      <ArticleModal {semesters} {subjects} {tags} client:load />
+    </Modal> :
+    <></>
+  }
+  {pathname === "/" ?
+    <Modal id="subjectModal" client:load>
+      <FolderModal client:load />
+    </Modal> :
+    <></>
+  }
+  <slot/>
+</div>

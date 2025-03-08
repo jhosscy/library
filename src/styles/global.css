@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #f8f9fa;
+  --color-primary-100: #f1f3f5;
+  --color-primary-200: #e9ecef;
+  --color-primary-300: #dee2e6;
+  --color-primary-400: #ced4da;
+  --color-primary-500: #adb5bd;
+  --color-primary-600: #868e96;
+  --color-primary-700: #495057;
+  --color-primary-800: #343a40;
+  --color-primary-900: #212529;
+  
+  --color-accent-300: #74c0fc;
+  --color-accent-500: #339af0;
+  --color-accent-700: #1c7ed6;
+  
+  --font-sans: "Inter", system-ui, sans-serif;
+  
+  --spacing-sidebar: 240px;
+  --animate-fade-in-up: fadeInUp 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  --animate-fade-out-down: fadeOutDown 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOutDown {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+  }
+  --breakpoint-xs: 420px;
+}
+
+/* Define la variante dark para que se active cuando el elemento o sus padres tengan la clase 'dark' */
+@custom-variant dark (&:where(.dark, .dark *));

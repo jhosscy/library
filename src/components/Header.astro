@@ -1,0 +1,55 @@
+<header class="bg-white dark:bg-primary-900 border-b border-primary-200 dark:border-primary-800 px-3 sm:px-6 py-3 sticky top-0 z-10">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <!-- Primera parte: Breadcrumb y toggle de tema en móvil (visible solo en móvil) -->
+    <div class="flex items-center justify-between w-full sm:w-auto">
+      <a href="/" class="text-sm text-primary-500 dark:text-primary-400">Inicio</a>
+      <button id="theme-toggle-mobile" class="p-2 rounded-sm text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors sm:hidden">
+        <!-- Icono para modo claro -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+        <!-- Icono para modo oscuro -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Segunda parte: Buscador -->
+    <div class="mt-3 sm:mt-0 sm:w-md relative">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Buscar..."
+        class="w-full py-2 pl-10 pr-3 bg-primary-100 dark:bg-primary-800 rounded-sm text-sm focus:outline-none focus:ring-1 focus:ring-accent-500 dark:text-primary-200 "
+      />
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+
+    <!-- Tercera parte: Toggle de tema para pantallas grandes (visible solo en desktop) -->
+    <div class="hidden sm:block">
+      <button id="theme-toggle-desktop" class="p-2 rounded-sm text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors">
+        <!-- Icono para modo claro -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+        <!-- Icono para modo oscuro -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Función para alternar el tema (se usa para ambos botones)
+  function toggleTheme() {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }
+  document.getElementById('theme-toggle-mobile')?.addEventListener('click', toggleTheme);
+  document.getElementById('theme-toggle-desktop')?.addEventListener('click', toggleTheme);
+</script>

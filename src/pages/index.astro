@@ -1,11 +1,51 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import SubjectCards from '../components/SubjectCards.svelte';
+import FloatingActionButton from '../components/FloatingActionButton.astro'
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import { getAllSubjectsWithSemesters } from '../services/subjectServices';
+import { getAllTags } from '../services/fileServices';
+// Fetch subjects from Supabase
+const subjects = await getAllSubjectsWithSemesters();
+const tags = await getAllTags();
 ---
 
-<Layout>
-	<Welcome />
+<script>
+  document.addEventListener('click', (e) => {
+    const details = document.getElementById('menu-details');
+    if (details && details.hasAttribute('open') && !details.contains(e.target)) {
+      details.removeAttribute('open');
+    }
+  });
+</script>
+
+<Layout title='Academic Resource Manager'>
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-xl font-bold text-primary-900 dark:text-white">Mis Materias</h1>
+      
+      <div class="relative" id="subject-actions">
+        <details class="relative group" id="menu-details">
+          <summary class="flex p-2 text-primary-500 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-800 rounded-md transition-colors cursor-pointer list-none marker:hidden focus:outline-none [&::-webkit-details-marker]:hidden">
+            <span class="material-symbols-outlined">more_vert</span>
+          </summary>
+          
+          <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-primary-800 rounded-md shadow-lg z-10 border border-primary-200 dark:border-primary-700 transition-all duration-150 opacity-0 invisible group-open:opacity-100 group-open:visible">
+            <button class="w-full text-left px-4 py-2 text-sm text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors">
+              <span class="material-symbols-outlined text-sm align-middle mr-2">sort</span>
+              Ordenar por nombre
+            </button>
+            <button class="w-full text-left px-4 py-2 text-sm text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-700 transition-colors">
+              <span class="material-symbols-outlined text-sm align-middle mr-2">sort</span>
+              Ordenar por número de recursos
+            </button>
+          </div>
+        </details>
+      </div>
+    </div>
+    <div id="container-subject" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <SubjectCards datas={subjects} client:load />
+    </div>
+  </div>
+  <FloatingActionButton semesters={[]} {subjects} {tags}/>
 </Layout>

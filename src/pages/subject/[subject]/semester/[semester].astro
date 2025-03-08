@@ -1,0 +1,38 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import FloatingActionButton from '../../../../components/FloatingActionButton.astro';
+import Resources from '../../../../components/Resources.svelte';
+import { getFilesBySubjectAndSemester, getAllTags } from '../../../../services/fileServices';
+
+const { semester } = Astro.params;
+const [title, semesterId, subjectId] = semester.split("-");
+const files = await getFilesBySubjectAndSemester(subjectId, semesterId);
+const tags = await getAllTags();
+const parametros = Astro.url.pathname.split("/");
+const indice = parametros.findIndex(param => param.startsWith("subject"));
+const subject = parametros[indice + 1];
+---
+
+<Layout title={title}>
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-6">
+      <a href={`/subject/${subject}`} class="text-accent-500 hover:text-accent-700 transition-colors flex items-center gap-2 mb-2">
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span class="text-sm">Volver</span>
+      </a>
+      <h1 class="text-xl font-bold text-primary-900 dark:text-white">
+        {subject.split("-")[0]} - {title}
+      </h1>
+    </div>
+
+    {files.length > 0 ? (
+      <div class="rounded-lg overflow-hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Resources {files} client:load />
+      </div>
+    ) : (
+      <></>
+    )}
+  </div>
+
+  <FloatingActionButton semesters={[{id: semesterId, semester_name: title}]} subjects={[{title: subject.split("-")[0], id: subjectId}]} {tags}/>
+</Layout>
